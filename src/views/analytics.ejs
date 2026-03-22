@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - URL Shortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 40px;
+        }
+
+        /* Header */
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 15px 30px;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .navbar-brand i {
+            margin-right: 10px;
+        }
+
+        .btn-back {
+            background: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        .analytics-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .analytics-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .url-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #999;
+            font-weight: 600;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .charts-section h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 30px 0;
+        }
+
+        /* Visit History */
+        .history-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-section h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: #f8f9fa;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-icon {
+            font-size: 24px;
+            color: #667eea;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .history-time {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .history-timestamp {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .history-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .empty-text {
+            color: #999;
+            font-size: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .url-info {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-number {
+                font-size: 28px;
+            }
+
+            .analytics-header h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* Scrollbar */
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="navbar-custom">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" class="navbar-brand" style="text-decoration: none;">
+                <i class="fas fa-link"></i> URL Shortener
+            </a>
+            <a href="/" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Analytics Header -->
+        <div class="analytics-header">
+            <h2><i class="fas fa-chart-pie"></i> Analytics</h2>
+            <div class="url-info">
+                <div class="info-card">
+                    <div class="info-label">Short URL</div>
+                    <div class="info-value">
+                        <i class="fas fa-link"></i> /<%= shortId %>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Original URL</div>
+                    <div class="info-value"><%= redirectUrl %></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-mouse-pointer"></i>
+                </div>
+                <div class="stat-number"><%= totalClicks %></div>
+                <div class="stat-label">Total Clicks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-number"><%= uniqueDays %></div>
+                <div class="stat-label">Days Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number" id="avgClicks">0</div>
+                <div class="stat-label">Avg Clicks/Day</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <h3><i class="fas fa-chart-bar"></i> Clicks Over Time</h3>
+            <div class="chart-container">
+                <canvas id="clicksChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Visit History -->
+        <div class="history-section">
+            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+            <div class="history-list">
+                <% if(analytics.length > 0) { %>
+                    <% analytics.slice().reverse().forEach((visit) => { %>
+                        <div class="history-item">
+                            <div class="history-icon">
+                                <i class="fas fa-mouse"></i>
+                            </div>
+                            <div class="history-time">
+                                <div class="history-timestamp">
+                                    <%= new Date(visit.timestamp).toLocaleTimeString() %>
+                                </div>
+                                <div class="history-date">
+                                    <%= new Date(visit.timestamp).toLocaleDateString('en-US', { 
+                                        weekday: 'short', 
+                                        year: 'numeric', 
+                                        month: 'short', 
+                                        day: 'numeric' 
+                                    }) %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <div class="empty-text">No visits yet. Share your link to see activity!</div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div id="analyticsMeta" data-total-clicks="<%= totalClicks %>" data-unique-days="<%= uniqueDays %>"></div>
+    <script id="analyticsJson" type="application/json"><%- JSON.stringify(analytics) %></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Calculate average clicks per day
+        const analyticsMetaElement = document.getElementById('analyticsMeta');
+        const totalClicks = Number(analyticsMetaElement?.dataset.totalClicks || 0);
+        const uniqueDays = Number(analyticsMetaElement?.dataset.uniqueDays || 0);
+        const avgClicks = Math.round(totalClicks / (uniqueDays || 1)) || 0;
+        document.getElementById('avgClicks').textContent = avgClicks;
+
+        // Generate clicks chart
+        const analyticsJson = document.getElementById('analyticsJson')?.textContent || '[]';
+        let analytics = [];
+
+        try {
+            analytics = JSON.parse(analyticsJson);
+        } catch (error) {
+            analytics = [];
+        }
+        
+        // Group clicks by day
+        const clicksByDay = {};
+        analytics.forEach(visit => {
+            const date = new Date(visit.timestamp).toLocaleDateString();
+            clicksByDay[date] = (clicksByDay[date] || 0) + 1;
+        });
+
+        const labels = Object.keys(clicksByDay).sort((a, b) => new Date(a) - new Date(b));
+        const data = labels.map(label => clicksByDay[label]);
+
+        const ctx = document.getElementById('clicksChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.length > 0 ? labels : ['No data'],
+                datasets: [{
+                    label: 'Clicks per Day',
+                    data: data.length > 0 ? data : [0],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            },
+                            color: '#666'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#999',
+                            font: {
+                                size: 12
+                            }
+                        },
+                        grid: {
+                            color: '#f0f0f0'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#999',
+                            font: {
+                                size: 12
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
