@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
         return res.redirect("/login");
     }
 
-    const allurls = await URL.find({ createdBy: req.user._id });
+    const allurls = await URL.find({ createdBy: req.user._id }).sort("-createdAt");
     return res.render("home", {
         urls: allurls,
         baseUrl: req.app.locals.baseUrl,

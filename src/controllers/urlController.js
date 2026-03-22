@@ -3,14 +3,23 @@ const shortid = require("shortid");
 
 async function handlegenerateNewShortURL(req, res) {
     const body = req.body;
-    if (!body.url) {
-        return res.status(400).json({ error: "url is required" });
+    const originalUrl = (body.originalUrl || body.url || "").trim();
+
+    if (!originalUrl) {
+        return res.status(400).json({ message: "URL is required" });
+    }
+
+    try {
+        new globalThis.URL(originalUrl);
+    } catch (error) {
+        return res.status(400).json({ message: "Invalid URL format" });
     }
 
     const shortId = shortid();
     await URL.create({
         shortId,
-        redirectUrl: body.url,
+        redirectUrl: originalUrl,
+        clicks: 0,
         visitHistory: [],
         createdBy: req.user._id,
     });
@@ -32,7 +41,7 @@ async function handlegetanalytics(req, res) {
     return res.render("analytics", {
         shortId: result.shortId,
         redirectUrl: result.redirectUrl,
-        totalClicks: result.visitHistory.length,
+        totalClicks: result.clicks ?? result.visitHistory.length,
         uniqueDays: Math.max(1, uniqueDays),
         analytics: result.visitHistory,
     });
