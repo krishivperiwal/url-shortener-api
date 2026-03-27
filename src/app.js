@@ -1,12 +1,16 @@
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
-const urlRoutes = require("./routes/urlRoutes");
-const authRoutes = require("./routes/authRoutes");
-const pageRoutes = require("./routes/pageRoutes");
-const URL = require("./models/url");
-const { restrictedToLoggedinUserOnly, checkAuth } = require("./middlewares/authMiddleware");
+import urlRoutes from "./routes/urlRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import pageRoutes from "./routes/pageRoutes.js";
+import URL from "./models/URL.js";
+import { protect, attachUser } from "./middlewares/authMiddleware.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const APP_PORT = process.env.PORT || 5000;
@@ -20,9 +24,9 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve("./src/views"));
 app.locals.baseUrl = BASE_URL;
 
-app.use("/url", restrictedToLoggedinUserOnly, urlRoutes);
+app.use("/url", protect, urlRoutes);
 app.use("/user", authRoutes);
-app.use("/", checkAuth, pageRoutes);
+app.use("/", attachUser, pageRoutes);
 
 app.get("/url/:shortId", async (req, res) => {
     try {
@@ -31,14 +35,14 @@ app.get("/url/:shortId", async (req, res) => {
             { shortId },
             {
                 $inc: {
-                    clicks: 1,
+                    clicks: 1
                 },
                 $push: {
                     visitHistory: {
-                        timestamp: Date.now(),
-                    },
-                },
-            },
+                        timestamp: Date.now()
+                    }
+                }
+            }
         );
 
         if (!entry) {
@@ -59,14 +63,14 @@ app.get("/:shortId", async (req, res) => {
             { shortId },
             {
                 $inc: {
-                    clicks: 1,
+                    clicks: 1
                 },
                 $push: {
                     visitHistory: {
-                        timestamp: Date.now(),
-                    },
-                },
-            },
+                        timestamp: Date.now()
+                    }
+                }
+            }
         );
 
         if (!entry) {
@@ -80,4 +84,4 @@ app.get("/:shortId", async (req, res) => {
     }
 });
 
-module.exports = app;
+export default app;

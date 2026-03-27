@@ -1,6 +1,6 @@
-const { getUser } = require("../utils/sessionStore");
+import { getUser } from "../utils/sessionStore.js";
 
-async function restrictedToLoggedinUserOnly(req, res, next) {
+const protect = async (req, res, next) => {
     const userUid = req.cookies?.uid;
 
     if (!userUid) {
@@ -15,18 +15,15 @@ async function restrictedToLoggedinUserOnly(req, res, next) {
 
     req.user = user;
     next();
-}
+};
 
-async function checkAuth(req, res, next) {
+const attachUser = async (req, res, next) => {
     const userUid = req.cookies?.uid;
 
     const user = getUser(userUid);
 
     req.user = user;
     next();
-}
-
-module.exports = {
-    restrictedToLoggedinUserOnly,
-    checkAuth,
 };
+
+export { protect, attachUser };

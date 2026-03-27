@@ -1,30 +1,31 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const UrlSchema = new mongoose.Schema({
-    shortId:{
-        type:String,
-        required:true,
-        unique:true,
+const UrlSchema = new mongoose.Schema(
+    {
+        shortId: {
+            type: String,
+            required: true,
+            unique: true
     },
-    redirectUrl:{
-        type:String,
-        required:true,
+        redirectUrl: {
+            type: String,
+            required: true
+        },
+        clicks: {
+            type: Number,
+            default: 0
+        },
+        visitHistory: [{ timestamp: { type: Number } }],
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
     },
-    clicks: {
-        type: Number,
-        default: 0,
-    },
-    visitHistory:[{timestamp:{type:Number}}],
-    createdBy:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"users",
-    },
-    },
-    {timestamps:true}
+    { timestamps: true }
 );
 
 UrlSchema.index({ shortId: 1 }, { unique: true });
 
-const URL = mongoose.model("url", UrlSchema);
+const URL = mongoose.model("URL", UrlSchema);
 
-module.exports = URL;
+export default URL;

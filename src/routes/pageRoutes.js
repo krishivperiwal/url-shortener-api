@@ -1,5 +1,5 @@
-const express = require("express");
-const URL = require("../models/url");
+import express from "express";
+import URL from "../models/URL.js";
 
 const router = express.Router();
 
@@ -8,10 +8,10 @@ router.get("/", async (req, res) => {
         return res.redirect("/login");
     }
 
-    const allurls = await URL.find({ createdBy: req.user._id }).sort("-createdAt");
+    const allUrls = await URL.find({ createdBy: req.user._id }).sort("-createdAt");
     return res.render("home", {
-        urls: allurls,
-        baseUrl: req.app.locals.baseUrl,
+        urls: allUrls,
+        baseUrl: req.app.locals.baseUrl
     });
 });
 
@@ -28,4 +28,4 @@ router.post("/logout", (req, res) => {
     return res.redirect("/login");
 });
 
-module.exports = router;
+export default router;

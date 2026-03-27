@@ -1,7 +1,7 @@
-const URL = require("../models/url");
-const shortid = require("shortid");
+import URL from "../models/URL.js";
+import shortid from "shortid";
 
-async function handlegenerateNewShortURL(req, res) {
+const generateShortUrl = async (req, res) => {
     const body = req.body;
     const originalUrl = (body.originalUrl || body.url || "").trim();
 
@@ -21,13 +21,13 @@ async function handlegenerateNewShortURL(req, res) {
         redirectUrl: originalUrl,
         clicks: 0,
         visitHistory: [],
-        createdBy: req.user._id,
+        createdBy: req.user._id
     });
 
     return res.redirect("/?id=" + shortId);
-}
+};
 
-async function handlegetanalytics(req, res) {
+const getUrlAnalytics = async (req, res) => {
     const shortId = req.params.shortId;
     const result = await URL.findOne({ shortId });
     if (!result) {
@@ -35,7 +35,7 @@ async function handlegetanalytics(req, res) {
     }
 
     const uniqueDays = new Set(
-        result.visitHistory.map((visit) => new Date(visit.timestamp).toLocaleDateString()),
+        result.visitHistory.map(visit => new Date(visit.timestamp).toLocaleDateString())
     ).size;
 
     return res.render("analytics", {
@@ -43,11 +43,8 @@ async function handlegetanalytics(req, res) {
         redirectUrl: result.redirectUrl,
         totalClicks: result.clicks ?? result.visitHistory.length,
         uniqueDays: Math.max(1, uniqueDays),
-        analytics: result.visitHistory,
+        analytics: result.visitHistory
     });
-}
-
-module.exports = {
-    handlegenerateNewShortURL,
-    handlegetanalytics,
 };
+
+export { generateShortUrl, getUrlAnalytics };

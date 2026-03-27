@@ -1,7 +1,8 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import app from "./src/app.js";
+import { connectToMongoDB } from "./src/config/db.js";
 
-const app = require("./src/app");
-const { connectToMongoDB } = require("./src/config/db");
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const mongoURL = process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/short-url";
