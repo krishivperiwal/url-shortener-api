@@ -16,10 +16,11 @@ This API provides a scalable backend solution to generate short, unique links an
 
 * Generate unique short URLs
 * Redirect to original URLs
+* Session-based authentication using cookies
+* Protected routes for authenticated users
 * Optimized lookup using MongoDB indexing
 * Input validation and error handling
 * RESTful API design
-* Scalable URL mapping system
 
 ---
 
@@ -31,8 +32,16 @@ This API provides a scalable backend solution to generate short, unique links an
 
 ---
 
-## 🏗 Architecture
+## 🔐 Authentication
 
+* Session-based authentication using cookies
+* Protected routes using middleware (`protect`)
+* User login and registration support
+
+---
+
+## 🏗 Architecture
+* Middleware → Authentication & request handling
 * Controllers → Business logic
 * Models → Database schema
 * Routes → API endpoints
@@ -82,6 +91,7 @@ Create a `.env` file using `.env.example`
 ---
 
 ## 📸 Preview
+A simple EJS-based interface is included to interact with the API.
 
 ### Analytics Dashboard
 ![Analytics Dashboard](preview/analytics.png)
