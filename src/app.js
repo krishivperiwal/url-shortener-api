@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import urlRoutes from "./routes/urlRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
-import URL from "./models/URL.js";
+import URL from "./models/url.js";
 import { protect, attachUser } from "./middlewares/authMiddleware.js";
 import cors from 'cors';
 
