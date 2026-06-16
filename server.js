@@ -1,8 +1,13 @@
 import dotenv from "dotenv";
+
+dotenv.config();
+
 import app from "./src/app.js";
 import { connectToMongoDB } from "./src/config/db.js";
 
-dotenv.config();
+if (!process.env.JWT_SECRET) {
+  console.warn("WARNING: JWT_SECRET is not configured. Create a .env file with JWT_SECRET=<your secret>");
+}
 
 const PORT = process.env.PORT || 5000;
 const mongoURL = process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/short-url";

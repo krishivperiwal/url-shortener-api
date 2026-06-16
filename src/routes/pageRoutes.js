@@ -24,7 +24,7 @@ router.get("/login", (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-    res.clearCookie("uid");
+    res.clearCookie("token");
     return res.redirect("/login");
 });
 
