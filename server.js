@@ -10,7 +10,10 @@ if (!process.env.JWT_SECRET) {
 }
 
 const PORT = process.env.PORT || 5000;
-const mongoURL = process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/short-url";
+const mongoURL = process.env.MONGO_URI || process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/short-url";
+if (!process.env.MONGO_URI && !process.env.MONGODB_URL) {
+  console.warn("WARNING: No MongoDB connection string found in environment variables; defaulting to localhost.");
+}
 
 connectToMongoDB(mongoURL)
     .then(() => {
