@@ -21,7 +21,23 @@ app.set('trust proxy', 1);
 const APP_PORT = process.env.PORT || 5000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${APP_PORT}`;
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://url-shortener-client-jade.vercel.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
